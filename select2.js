@@ -3561,50 +3561,55 @@ the specific language governing permissions and limitations under the Apache Lic
             valueMethods = ["opened", "isFocused", "container", "dropdown"],
             propertyMethods = ["val", "data"],
             methodsMap = { search: "externalSearch" };
+        // Attempt to detect touch devices
+        var supportsTouchEvents = (('ontouchstart' in window) ||
+                                   (navigator.msMaxTouchPoints > 0));
 
-        this.each(function () {
-            if (args.length === 0 || typeof(args[0]) === "object") {
-                opts = args.length === 0 ? {} : $.extend({}, args[0]);
-                opts.element = $(this);
+        if(!supportsTouchEvents) {
+            this.each(function () {
+                if (args.length === 0 || typeof(args[0]) === "object") {
+                    opts = args.length === 0 ? {} : $.extend({}, args[0]);
+                    opts.element = $(this);
 
-                if (opts.element.get(0).tagName.toLowerCase() === "select") {
-                    multiple = opts.element.prop("multiple");
+                    if (opts.element.get(0).tagName.toLowerCase() === "select") {
+                        multiple = opts.element.prop("multiple");
+                    } else {
+                        multiple = opts.multiple || false;
+                        if ("tags" in opts) {opts.multiple = multiple = true;}
+                    }
+
+                    select2 = multiple ? new window.Select2["class"].multi() : new window.Select2["class"].single();
+                    select2.init(opts);
+                } else if (typeof(args[0]) === "string") {
+
+                    if (indexOf(args[0], allowedMethods) < 0) {
+                        throw "Unknown method: " + args[0];
+                    }
+
+                    value = undefined;
+                    select2 = $(this).data("select2");
+                    if (select2 === undefined) return;
+
+                    method=args[0];
+
+                    if (method === "container") {
+                        value = select2.container;
+                    } else if (method === "dropdown") {
+                        value = select2.dropdown;
+                    } else {
+                        if (methodsMap[method]) method = methodsMap[method];
+
+                        value = select2[method].apply(select2, args.slice(1));
+                    }
+                    if (indexOf(args[0], valueMethods) >= 0
+                        || (indexOf(args[0], propertyMethods) >= 0 && args.length == 1)) {
+                        return false; // abort the iteration, ready to return first matched value
+                    }
                 } else {
-                    multiple = opts.multiple || false;
-                    if ("tags" in opts) {opts.multiple = multiple = true;}
+                    throw "Invalid arguments to select2 plugin: " + args;
                 }
-
-                select2 = multiple ? new window.Select2["class"].multi() : new window.Select2["class"].single();
-                select2.init(opts);
-            } else if (typeof(args[0]) === "string") {
-
-                if (indexOf(args[0], allowedMethods) < 0) {
-                    throw "Unknown method: " + args[0];
-                }
-
-                value = undefined;
-                select2 = $(this).data("select2");
-                if (select2 === undefined) return;
-
-                method=args[0];
-
-                if (method === "container") {
-                    value = select2.container;
-                } else if (method === "dropdown") {
-                    value = select2.dropdown;
-                } else {
-                    if (methodsMap[method]) method = methodsMap[method];
-
-                    value = select2[method].apply(select2, args.slice(1));
-                }
-                if (indexOf(args[0], valueMethods) >= 0
-                    || (indexOf(args[0], propertyMethods) >= 0 && args.length == 1)) {
-                    return false; // abort the iteration, ready to return first matched value
-                }
-            } else {
-                throw "Invalid arguments to select2 plugin: " + args;
-            }
-        });
+            });
+        }
         return (value === undefined) ? this : value;
     };
 
