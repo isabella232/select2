@@ -174,7 +174,7 @@ the specific language governing permissions and limitations under the Apache Lic
     }
 
     function getSideBorderPadding(element) {
-        return element.outerWidth(false) - element.width();
+        return element.get(0).getBoundingClientRect().width - element.width();
     }
 
     function installKeyUpChangeEvent(element) {
@@ -1385,7 +1385,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 container = this.container,
                 offset = container.offset(),
                 height = container.outerHeight(false),
-                width = container.outerWidth(false),
+                width = container.get(0).getBoundingClientRect().width,
                 dropHeight = $dropdown.outerHeight(false),
                 $window = $(window),
                 windowWidth = $window.width(),
@@ -1396,12 +1396,12 @@ the specific language governing permissions and limitations under the Apache Lic
                 dropLeft = offset.left,
                 enoughRoomBelow = dropTop + dropHeight <= viewportBottom,
                 enoughRoomAbove = (offset.top - dropHeight) >= $window.scrollTop(),
-                dropWidth = $dropdown.outerWidth(false),
+                dropWidth = $dropdown.get(0).getBoundingClientRect().width,
                 enoughRoomOnRight = function() {
                     return dropLeft + dropWidth <= viewPortRight;
                 },
                 enoughRoomOnLeft = function() {
-                    return offset.left + viewPortRight + container.outerWidth(false)  > dropWidth;
+                    return offset.left + viewPortRight + container.get(0).getBoundingClientRect().width  > dropWidth;
                 },
                 aboveNow = $dropdown.hasClass("select2-drop-above"),
                 bodyOffset,
@@ -1430,13 +1430,13 @@ the specific language governing permissions and limitations under the Apache Lic
                 $dropdown.hide();
                 offset = this.container.offset();
                 height = this.container.outerHeight(false);
-                width = this.container.outerWidth(false);
+                width = this.container.get(0).getBoundingClientRect().width;
                 dropHeight = $dropdown.outerHeight(false);
                 viewPortRight = $window.scrollLeft() + windowWidth;
                 viewportBottom = $window.scrollTop() + windowHeight;
                 dropTop = offset.top + height;
                 dropLeft = offset.left;
-                dropWidth = $dropdown.outerWidth(false);
+                dropWidth = $dropdown.get(0).getBoundingClientRect().width;
                 $dropdown.show();
 
                 // fix so the cursor does not move to the left within the search-textbox in IE
@@ -1448,7 +1448,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 $dropdown.addClass('select2-drop-auto-width');
                 $dropdown.css('width', '');
                 // Add scrollbar width to dropdown if vertical scrollbar is present
-                dropWidth = $dropdown.outerWidth(false) + (resultsListNode.scrollHeight === resultsListNode.clientHeight ? 0 : scrollBarDimensions.width);
+                dropWidth = $dropdown.get(0).getBoundingClientRect().width + (resultsListNode.scrollHeight === resultsListNode.clientHeight ? 0 : scrollBarDimensions.width);
                 dropWidth > width ? width = dropWidth : dropWidth = width;
                 dropHeight = $dropdown.outerHeight(false);
             }
@@ -1467,7 +1467,7 @@ the specific language governing permissions and limitations under the Apache Lic
             }
 
             if (!enoughRoomOnRight() && enoughRoomOnLeft()) {
-                dropLeft = offset.left + this.container.outerWidth(false) - dropWidth;
+                dropLeft = offset.left + this.container.get(0).getBoundingClientRect().width - dropWidth;
             }
 
             css =  {
@@ -2091,7 +2091,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 if (this.opts.width === "off") {
                     return null;
                 } else if (this.opts.width === "element"){
-                    return this.opts.element.outerWidth(false) === 0 ? 'auto' : this.opts.element.outerWidth(false) + 'px';
+                    return this.opts.element.get(0).getBoundingClientRect().width === 0 ? 'auto' : this.opts.element.get(0).getBoundingClientRect().width + 'px';
                 } else if (this.opts.width === "copy" || this.opts.width === "resolve") {
                     // check if there is inline style on the element that contains width
                     style = this.opts.element.attr('style');
@@ -2112,7 +2112,7 @@ the specific language governing permissions and limitations under the Apache Lic
                         if (style.indexOf("%") > 0) return style;
 
                         // finally, fallback on the calculated width of the element
-                        return (this.opts.element.outerWidth(false) === 0 ? 'auto' : this.opts.element.outerWidth(false) + 'px');
+                        return (this.opts.element.get(0).getBoundingClientRect().width === 0 ? 'auto' : this.opts.element.get(0).getBoundingClientRect().width + 'px');
                     }
 
                     return null;
